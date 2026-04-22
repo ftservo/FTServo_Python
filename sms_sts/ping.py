@@ -10,6 +10,20 @@
 import sys
 import os
 
+
+import subprocess
+
+# ... after portHandler.openPort() ...
+
+# Use the setserial command to force low latency mode
+try:
+    subprocess.run(['sudo', 'setserial', '/dev/serial0', 'low_latency'], check=True)
+    print("Low latency mode enabled")
+except:
+    print("Could not set low latency (ensure 'setserial' is installed)")
+
+
+
 sys.path.append("..")
 from scservo_sdk import *                   # Uses FTServo SDK library
 
@@ -17,7 +31,7 @@ from scservo_sdk import *                   # Uses FTServo SDK library
 # Initialize PortHandler instance
 # Set the port path
 # Get methods and members of PortHandlerLinux or PortHandlerWindows
-portHandler = PortHandler('/dev/ttyUSB0') #ex) Windows: "COM1"   Linux: "/dev/ttyUSB0" Mac: "/dev/tty.usbserial-*"
+portHandler = PortHandler('/dev/ttyAMA0') #ex) Windows: "COM1"   Linux: "/dev/ttyUSB0" Mac: "/dev/tty.usbserial-*"
 
 # Initialize PacketHandler instance
 # Get methods and members of Protocol
