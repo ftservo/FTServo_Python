@@ -28,7 +28,11 @@ class PortHandler(object):
         self.is_open = False
 
     def clearPort(self):
+        # Clear both input AND output buffers
+        self.ser.reset_output_buffer()
+        self.ser.reset_input_buffer()
         self.ser.flush()
+        time.sleep(0.001)
 
     def setPortName(self, port_name):
         self.port_name = port_name
@@ -60,11 +64,15 @@ class PortHandler(object):
             return [ord(ch) for ch in self.ser.read(length)]
 
     def writePort(self, packet):
-        return self.ser.write(packet)
+        written_bytes = self.ser.write(packet)
+        self.ser.flush()                  # Wait for TX to finish
+        self.ser.reset_input_buffer()      # Wipe the "echo" of your own message
+        return written_bytes
+#        return self.ser.write(packet)
 
     def setPacketTimeout(self, packet_length):
         self.packet_start_time = self.getCurrentTime()
-        self.packet_timeout = (self.tx_time_per_byte * packet_length) + (self.tx_time_per_byte * 3.0) + LATENCY_TIMER
+        self.packet_timeout = (self.tx_time_per_byte * (packet_length + 3.0)) + LATENCY_TIMER + 20.0
 
     def setPacketTimeoutMillis(self, msec):
         self.packet_start_time = self.getCurrentTime()
@@ -102,7 +110,10 @@ class PortHandler(object):
 
         self.is_open = True
 
+        # Wait for port to stabilize before use
+        time.sleep(0.1)
         self.ser.reset_input_buffer()
+        self.ser.reset_output_buffer()
 
         self.tx_time_per_byte = (1000.0 / self.baudrate) * 10.0
 
