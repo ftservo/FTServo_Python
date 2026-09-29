@@ -59,7 +59,7 @@ while 1:
             print("%s" % packetHandler.getRxPacketError(scs_error))
     packetHandler.RegAction()
 
-    time.sleep((1000-20)/(1500) + 0.1))#//[(P1-P0)/(V)] + 0.1
+    time.sleep((1000-20)/(1500) + 0.1)#//[(P1-P0)/(V)] + 0.1
 
 # Close port
 portHandler.closePort()
