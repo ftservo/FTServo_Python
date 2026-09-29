@@ -8,8 +8,9 @@ root dirrectory
      |---sms_sts
      |---scscl
      |---hls
+     |---imu
 ```
-The 'scscl' 'sms_sts' 'hls' directories contain examples of using the library.
+The 'scscl' 'sms_sts' 'hls' 'imu' directories contain examples of using the library.
 
 The source code of the library is located in the `scservo_sdk` directory.
 
