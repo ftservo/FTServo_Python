@@ -58,6 +58,20 @@ class imu(protocol_packet_handler):
         qz = self.scs_makeword(data[4], data[5])
         return qx, qy, qz, result, error
 
+    def scs_halffloat(self, h):
+        #16位半精度浮点数(S1E5F10)转换为浮点数
+        #BIT15:符号位, BIT14~10:阶码(5位), BIT9~0:尾数(10位)
+        sign = -1.0 if (h & 0x8000) else 1.0
+        exponent = (h >> 10) & 0x1F
+        mantissa = h & 0x03FF
+        if exponent == 0:
+            #非规格化数(含0)
+            return sign * (mantissa / 1024.0) * (2.0 ** -14)
+        if exponent == 0x1F:
+            #无穷大/NaN
+            return _math.nan if mantissa else sign * _math.inf
+        return sign * (1.0 + mantissa / 1024.0) * (2.0 ** (exponent - 15))
+
     def scs_slfp_qw(self, qx, qy, qz):
         #由四元数QX/QY/QZ原始16位值计算QW = sqrt(1 - QX^2 - QY^2 - QZ^2)
         #内存表说明：QX^2+QY^2+QZ^2 > 1 时先归一化或直接把QW置0，此处按QW置0处理
