@@ -74,8 +74,6 @@ python -c "import serial, matplotlib, numpy; print('deps ok')"
 ### 3. 运行示例
 
 ```powershell
-cd d:\gitree\FTServo_Python
-
 # 控制台打印
 python imu/read_slfp.py
 python imu/read_gyro.py
