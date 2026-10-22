@@ -40,7 +40,7 @@ from scservo_sdk.imu import (
 # Initialize PortHandler instance
 # Set the port path
 # Get methods and members of PortHandlerLinux or PortHandlerWindows
-portHandler = PortHandler('/dev/ttyUSB0')# ex) Windows: "COM1"   Linux: "/dev/ttyUSB0" Mac: "/dev/tty.usbserial-*"
+portHandler = PortHandler('COM6')# ex) Windows: "COM1"   Linux: "/dev/ttyUSB0" Mac: "/dev/tty.usbserial-*"
 
 # Initialize PacketHandler instance
 # Get methods and members of Protocol
@@ -60,11 +60,12 @@ else:
     print("Failed to change the baudrate")
     quit()
 
-# Sync read ID range: ID_START ~ IMU_ID-1 are HLS servos, IMU_ID(the last ID) is the IMU
-# In this example: ID1 is a HLS servo, ID2 is the IMU, please change them to the ID on your bus
-ID_START = 1
-ID_NUM = 3
-IMU_ID = ID_START + ID_NUM - 1
+# Sync read ID list: the IMU first, then the HLS servos on the same bus
+# In this example: ID200 is the IMU, ID10 and ID11 are HLS servos,
+# please change them to the IDs on your bus
+IMU_ID = 200
+SERVO_IDS = (10, 11)
+SYNC_IDS = (IMU_ID,) + SERVO_IDS
 
 # Sync read start address: HLS_PRESENT_POSITION_L(56) == IMU_PRESENT_SLFP_QXL(56), 15 bytes in total
 SYNC_READ_ADDR = HLS_PRESENT_POSITION_L
@@ -81,7 +82,7 @@ while 1:
     # Separator to make each sampling output clear
     print("--------------------------------------------------")
 
-    for scs_id in range(ID_START, IMU_ID + 1):
+    for scs_id in SYNC_IDS:
         # Add parameter storage for SCServo#scs_id present status value
         scs_addparam_result = groupSyncRead.addParam(scs_id)
         if scs_addparam_result != True:
@@ -91,7 +92,7 @@ while 1:
     if scs_comm_result != COMM_SUCCESS:
         print("%s" % packetHandler.getTxRxResult(scs_comm_result))
 
-    for scs_id in range(ID_START, IMU_ID + 1):
+    for scs_id in SYNC_IDS:
         # Check if groupsyncread data of SCServo#scs_id is available
         scs_data_result, scs_error = groupSyncRead.isAvailable(scs_id, SYNC_READ_ADDR, SYNC_READ_LEN)
         if scs_data_result != True:
@@ -99,14 +100,7 @@ while 1:
             continue
 
         if scs_id == IMU_ID:
-            # ---------- the last ID is the IMU: output quaternion and gyroscope ----------
-            # Get the 15 bytes data from address IMU_PRESENT_SLFP_QXL
-            data = []
-            for addr in range(SYNC_READ_ADDR, SYNC_READ_ADDR + SYNC_READ_LEN):
-                data.append(groupSyncRead.getData(scs_id, addr, 1))
-            print("[ID:%03d] SyncRead[%d~%d]:%s" % (scs_id, IMU_PRESENT_SLFP_QXL, IMU_PRESENT_SLFP_QXL + SYNC_READ_LEN - 1,
-                                                    " ".join(["%02X" % value for value in data])))
-
+            # ---------- the IMU: output quaternion and gyroscope ----------
             # 56-57 QX, 58-59 QY, 60-61 QZ: half float(S1E5F10), QW = sqrt(1 - QX^2 - QY^2 - QZ^2)
             scs_qx = groupSyncRead.getData(scs_id, IMU_PRESENT_SLFP_QXL, 2)
             scs_qy = groupSyncRead.getData(scs_id, IMU_PRESENT_SLFP_QYL, 2)
@@ -126,10 +120,6 @@ while 1:
                   packetHandler.scs_tohost(scs_wx, 15),
                   packetHandler.scs_tohost(scs_wy, 15),
                   packetHandler.scs_tohost(scs_wz, 15)))
-
-            # 64, 67, 70 are undefined bytes
-            print("[ID:%03d] Register[64]:0x%02X Register[67]:0x%02X Register[70]:0x%02X are undefined bytes" % (scs_id,
-                  data[64 - IMU_PRESENT_SLFP_QXL], data[67 - IMU_PRESENT_SLFP_QXL], data[70 - IMU_PRESENT_SLFP_QXL]))
         else:
             # ---------- other IDs are HLS servos: output present status per HLS memory table ----------
             # 56-57 position(signed 15 bits, 0~4095), 58-59 speed(signed 15 bits, rpm = V*0.732),

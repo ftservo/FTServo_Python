@@ -8,7 +8,7 @@
 #   QW       : sqrt(1 - QX^2 - QY^2 - QZ^2)
 #
 # Usage:
-#   python imu/slfp_viewer.py                     # COM6, ID 200, 1000000 bps
+#   python imu/slfp_viewer.py                     # /dev/ttyUSB0, ID 200, 1000000 bps
 #   python imu/slfp_viewer.py --port COM7 --id 1  # change port / IMU id
 #   python imu/slfp_viewer.py --demo              # simulated attitude, no hardware
 #   python imu/slfp_viewer.py --zero-on-start     # first second becomes the zero reference
