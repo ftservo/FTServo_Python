@@ -66,7 +66,7 @@ python -c "import serial, matplotlib, numpy; print('deps ok')"
 | `imu/read_slfp.py` | Read the SLFP quaternion QX/QY/QZ (half float) and compute QW | /dev/ttyUSB0 / ID 200 / 50 Hz |
 | `imu/read_gyro.py` | Read the 3-axis angular rate (raw + signed) | /dev/ttyUSB0 / ID 200 / 50 Hz |
 | `imu/read_acc.py` | Read the 3-axis acceleration (raw + signed) | /dev/ttyUSB0 / ID 200 / 50 Hz |
-| `imu/sync_read.py` | One sync-read packet of 15 bytes covering HLS servo + IMU | COM6 / IMU ID 200 + HLS ID 10, 11 |
+| `imu/sync_read.py` | One sync-read packet of 15 bytes covering HLS servo + IMU | /dev/ttyUSB0 / IMU ID 200 + HLS ID 10, 11 |
 | `imu/slfp_viewer.py` | 3D attitude viewer (cube + 3 axes + euler curves) | /dev/ttyUSB0 / ID 200 / 50 Hz |
 
 > `/dev/ttyUSB0` is the Linux default; on Windows change it to `COMx`.
