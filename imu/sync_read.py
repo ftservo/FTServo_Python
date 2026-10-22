@@ -15,19 +15,36 @@
 
 import sys
 import time
+from pathlib import Path
 
-sys.path.append("..")
-from scservo_sdk import *                       # Uses SCServo SDK library
+# Make the project root(which contains scservo_sdk/) importable,
+# independent of the current working directory
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+# Import only the symbols used in this example
+from scservo_sdk import PortHandler, GroupSyncRead, COMM_SUCCESS
+from scservo_sdk.hls import (
+    HLS_PRESENT_POSITION_L, HLS_PRESENT_SPEED_L, HLS_PRESENT_LOAD_L,
+    HLS_PRESENT_VOLTAGE, HLS_PRESENT_TEMPERATURE, HLS_PRESENT_CURRENT_L,
+    HLS_MOVING,
+)
+from scservo_sdk.imu import (
+    imu as ImuPacketHandler,
+    IMU_PRESENT_SLFP_QXL, IMU_PRESENT_SLFP_QYL, IMU_PRESENT_SLFP_QZL,
+    IMU_PRESENT_GYRO_WXL, IMU_PRESENT_GYRO_WYL, IMU_PRESENT_GYRO_WZL,
+)
 
 
 # Initialize PortHandler instance
 # Set the port path
 # Get methods and members of PortHandlerLinux or PortHandlerWindows
-portHandler = PortHandler('COM5')# ex) Windows: "COM1"   Linux: "/dev/ttyUSB0" Mac: "/dev/tty.usbserial-*"
+portHandler = PortHandler('/dev/ttyUSB0')# ex) Windows: "COM1"   Linux: "/dev/ttyUSB0" Mac: "/dev/tty.usbserial-*"
 
 # Initialize PacketHandler instance
 # Get methods and members of Protocol
-packetHandler = imu(portHandler)
+packetHandler = ImuPacketHandler(portHandler)
 
 # Open port
 if portHandler.openPort():
