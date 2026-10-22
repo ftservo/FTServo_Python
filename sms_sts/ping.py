@@ -9,9 +9,17 @@
 
 import sys
 import os
+from pathlib import Path
 
-sys.path.append("..")
-from scservo_sdk import *                   # Uses FTServo SDK library
+# Make the project root(which contains scservo_sdk/) importable,
+# independent of the current working directory
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+# Import only the symbols used in this example
+from scservo_sdk import PortHandler, COMM_SUCCESS
+from scservo_sdk.sms_sts import sms_sts as SmsStsPacketHandler
 
 
 # Initialize PortHandler instance
@@ -21,7 +29,7 @@ portHandler = PortHandler('/dev/ttyUSB0') #ex) Windows: "COM1"   Linux: "/dev/tt
 
 # Initialize PacketHandler instance
 # Get methods and members of Protocol
-packetHandler = sms_sts(portHandler)
+packetHandler = SmsStsPacketHandler(portHandler)
 # Open port
 if portHandler.openPort():
     print("Succeeded to open the port")
