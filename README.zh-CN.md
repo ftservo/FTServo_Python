@@ -66,7 +66,7 @@ python -c "import serial, matplotlib, numpy; print('deps ok')"
 | `imu/read_slfp.py` | 读 SLFP 四元数 QX/QY/QZ（半精度），反算 QW | /dev/ttyUSB0 / ID 200 / 50 Hz |
 | `imu/read_gyro.py` | 读三轴角速度（原始值 + 有符号值） | /dev/ttyUSB0 / ID 200 / 50 Hz |
 | `imu/read_acc.py` | 读三轴加速度（原始值 + 有符号值） | /dev/ttyUSB0 / ID 200 / 50 Hz |
-| `imu/sync_read.py` | 一次同步读 HLS 舵机 + IMU 的 15 字节 | /dev/ttyUSB0 / ID 1~3 |
+| `imu/sync_read.py` | 一次同步读 HLS 舵机 + IMU 的 15 字节 | COM6 / IMU ID 200 + HLS ID 10、11 |
 | `imu/slfp_viewer.py` | 四元数 3D 姿态可视化（立方体 + 三轴 + 欧拉角曲线） | /dev/ttyUSB0 / ID 200 / 50 Hz |
 
 > 表中 `/dev/ttyUSB0` 为 Linux 默认值，Windows 上需改成 `COMx`。
