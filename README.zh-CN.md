@@ -55,8 +55,7 @@ Succeeded to change the baudrate
 
 ```powershell
 # 使用系统 Python（本例 3.12.10），不要使用 uv 托管的解释器
-python -m pip install pyserial
-python -c "import serial, matplotlib, numpy; print('deps ok')"
+python -m pip install pyserial matplotlib numpy
 ```
 
 ### 2. IMU 示例一览
